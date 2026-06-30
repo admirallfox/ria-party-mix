@@ -569,36 +569,35 @@
     statusEl.textContent = "Касету збережено 📼";
   });
 
-  function loadLatestTracks() {
-    const container = document.getElementById("latestTracks");
+ function loadLatestTracks() {
+  const container = document.getElementById("latestTracks");
 
-    window.renderLatestTracks = function(tracks) {
-      if (!tracks || !tracks.length) {
-        container.innerHTML = '<p class="empty">Поки касета порожня. Будь першим треком 📼</p>';
-        return;
-      }
+  window.renderLatestTracks = function(tracks) {
+    if (!tracks || !tracks.length) {
+      container.innerHTML = '<p class="empty">Поки касета порожня. Будь першим треком 📼</p>';
+      return;
+    }
 
-      container.innerHTML = tracks.map(item => `
-        <article class="track-card">
-          <strong>${escapeHtml(item.track)}</strong>
-          ${item.comment ? `<p>${escapeHtml(item.comment)}</p>` : ""}
-        </article>
-      `).join("");
-    };
+    container.innerHTML = tracks.map(item => `
+      <article class="track-card">
+        <strong>${escapeHtml(item.track)}</strong>
+        ${item.comment ? `<p>${escapeHtml(item.comment)}</p>` : ""}
+      </article>
+    `).join("");
+  };
 
-    const oldScript = document.getElementById("latestTracksJsonp");
-    if (oldScript) oldScript.remove();
+  const oldScript = document.getElementById("latestTracksJsonp");
+  if (oldScript) oldScript.remove();
 
-    const script = document.createElement("script");
-    script.id = "latestTracksJsonp";
-    script.src = `${GOOGLE_SCRIPT_URL}?callback=renderLatestTracks&t=${Date.now()}`;
+  const script = document.createElement("script");
+  script.id = "latestTracksJsonp";
+  script.src = `${GOOGLE_SCRIPT_URL}?callback=renderLatestTracks&t=${Date.now()}`;
+  script.onerror = () => {
+    container.innerHTML = '<p class="empty">Не вдалось завантажити треки.</p>';
+  };
 
-    script.onerror = () => {
-      container.innerHTML = '<p class="empty">Не вдалось завантажити треки.</p>';
-    };
-
-    document.body.appendChild(script);
-  }
+  document.body.appendChild(script);
+}
 
   function escapeHtml(text) {
     return String(text)
