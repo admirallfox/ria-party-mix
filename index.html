@@ -366,7 +366,48 @@
       70% { box-shadow: 0 0 0 12px rgba(219,92,76,0); }
       100% { box-shadow: 0 0 0 0 rgba(219,92,76,0); }
     }
+.latest {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.14);
+}
 
+.latest h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.latest-list {
+  display: grid;
+  gap: 10px;
+}
+
+.track-card {
+  padding: 13px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.13);
+}
+
+.track-card strong {
+  display: block;
+  color: var(--white);
+  font-size: 14px;
+}
+
+.track-card p {
+  margin: 7px 0 0;
+  color: var(--white-soft);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.empty {
+  color: var(--white-muted);
+  font-size: 13px;
+}
     @media (max-width: 850px) {
       body { padding: 18px 12px; }
       .page { grid-template-columns: 1fr; }
@@ -431,6 +472,12 @@
         </div>
 
         <div class="status" id="status"></div>
+        <section class="latest">
+  <h2>Вже на касеті</h2>
+  <div id="latestTracks" class="latest-list">
+    <p class="empty">Треки завантажуються...</p>
+  </div>
+</section>
 
         <p class="hint">
           До зустрічі 4-го вересня!
@@ -498,6 +545,7 @@
         setTimeout(() => {
           document.body.classList.remove("recording");
           statusEl.textContent = "Клац. Твій трек записано на касету вечора 📼";
+          loadLatestTracks();
         }, 900);
       } catch (error) {
         document.body.classList.remove("recording");
@@ -514,8 +562,44 @@
       link.click();
       statusEl.textContent = "Касету збережено 📼";
     });
+async function loadLatestTracks() {
+  const container = document.getElementById("latestTracks");
 
+  if (!GOOGLE_SCRIPT_URL) {
+    container.innerHTML = '<p class="empty">Підключи Google Sheets, щоб бачити треки.</p>';
+    return;
+  }
+
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL);
+    const tracks = await response.json();
+
+    if (!tracks.length) {
+      container.innerHTML = '<p class="empty">Поки касета порожня. Будь першим треком 📼</p>';
+      return;
+    }
+
+    container.innerHTML = tracks.map(item => `
+      <article class="track-card">
+        <strong>${escapeHtml(item.track)}</strong>
+        ${item.comment ? `<p>${escapeHtml(item.comment)}</p>` : ""}
+      </article>
+    `).join("");
+  } catch (error) {
+    container.innerHTML = '<p class="empty">Не вдалось завантажити треки.</p>';
+  }
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
     updatePreview();
+    loadLatestTracks();
   </script>
 </body>
 </html>
