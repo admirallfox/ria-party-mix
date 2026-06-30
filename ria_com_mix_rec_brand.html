@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RIA.com MIX REC — касета зустрічі</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --blue: #003B56;
+      --blue-dark: #002B3F;
+      --blue-deep: #001E2D;
+      --white: #ffffff;
+      --white-soft: rgba(255,255,255,.76);
+      --white-muted: rgba(255,255,255,.52);
+      --orange: #DB5C4C;
+      --orange-hover: #C94D40;
+      --ink: #191817;
+      --cassette: #25211d;
+      --cassette-light: #3c352f;
+      --label: #F3D99A;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Montserrat", Arial, sans-serif;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(219,92,76,.26), transparent 28%),
+        radial-gradient(circle at 82% 8%, rgba(255,255,255,.10), transparent 25%),
+        radial-gradient(circle at 70% 88%, rgba(219,92,76,.13), transparent 32%),
+        linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 55%, var(--blue-deep) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .page {
+      width: min(1100px, 100%);
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero, .panel {
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018)),
+        var(--blue);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 22px 70px rgba(0,0,0,.34);
+      border-radius: 30px;
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before,
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 34px 34px;
+      pointer-events: none;
+      opacity: .45;
+    }
+
+    .hero > *, .panel > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.16);
+      color: var(--white);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(6px);
+    }
+
+    .brand strong {
+      color: var(--orange);
+    }
+
+    h1 {
+      margin: 22px 0 14px;
+      font-size: clamp(36px, 5.8vw, 72px);
+      line-height: .92;
+      letter-spacing: -0.06em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .lead {
+      margin: 0 0 22px;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--white-soft);
+      max-width: 650px;
+      font-weight: 500;
+    }
+
+    .cassette-wrap {
+      margin-top: 28px;
+      display: flex;
+      justify-content: center;
+      perspective: 900px;
+    }
+
+    .cassette {
+      width: min(560px, 100%);
+      aspect-ratio: 1.55 / 1;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.10), transparent 25%),
+        var(--cassette);
+      border-radius: 28px;
+      border: 5px solid #15120f;
+      position: relative;
+      box-shadow:
+        inset 0 0 0 4px rgba(255,255,255,.06),
+        0 24px 38px rgba(0,0,0,.34);
+      overflow: hidden;
+      transform: rotate(-4deg);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .cassette:hover {
+      transform: rotate(0deg) scale(1.025);
+      box-shadow:
+        inset 0 0 0 4px rgba(255,255,255,.06),
+        0 30px 48px rgba(0,0,0,.4);
+    }
+
+    .cassette::before,
+    .cassette::after {
+      content: "";
+      position: absolute;
+      top: 28px;
+      width: 58px;
+      height: 14px;
+      border-radius: 999px;
+      background: #15120f;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,.07);
+    }
+
+    .cassette::before { left: 30px; }
+    .cassette::after { right: 30px; }
+
+    .label {
+      position: absolute;
+      left: 9%;
+      right: 9%;
+      top: 18%;
+      height: 38%;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 25px, rgba(44,36,29,.16) 26px 27px),
+        var(--label);
+      border-radius: 16px;
+      border: 3px solid rgba(44,36,29,.72);
+      padding: 18px 22px;
+      text-align: center;
+      overflow: hidden;
+      color: #2c241d;
+    }
+
+    .label-title {
+      font-weight: 900;
+      font-size: clamp(17px, 2.65vw, 28px);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      color: var(--orange);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .label-sub {
+      margin-top: 8px;
+      font-size: clamp(13px, 2vw, 18px);
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wheels {
+      position: absolute;
+      left: 16%;
+      right: 16%;
+      top: 57%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wheel {
+      width: clamp(72px, 13vw, 116px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #efe1c3;
+      border: 8px solid #15120f;
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 0 12px #c8ad78;
+    }
+
+    .wheel::before {
+      content: "";
+      width: 42%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 20deg, #15120f 0 18deg, transparent 18deg 72deg, #15120f 72deg 90deg, transparent 90deg 144deg, #15120f 144deg 162deg, transparent 162deg 216deg, #15120f 216deg 234deg, transparent 234deg 288deg, #15120f 288deg 306deg, transparent 306deg);
+    }
+
+    .window {
+      width: 32%;
+      height: 38px;
+      border-radius: 999px;
+      background: #11100f;
+      border: 4px solid #efe1c3;
+      opacity: .95;
+    }
+
+    .bottom {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 8%;
+      height: 14%;
+      background: var(--cassette-light);
+      clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+      border: 3px solid rgba(255,255,255,.08);
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    label {
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--white-soft);
+    }
+
+    input, textarea {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px 15px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+      font: inherit;
+      color: var(--white);
+      outline: none;
+      font-weight: 500;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--white-muted);
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 4px rgba(219,92,76,.18);
+      background: rgba(255,255,255,.085);
+    }
+
+    textarea { min-height: 76px; resize: vertical; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    .primary {
+      background: var(--orange);
+      color: #fff7e8;
+      box-shadow: 0 12px 22px rgba(219,92,76,.28);
+    }
+
+    .primary:hover { background: var(--orange-hover); }
+
+    .secondary {
+      background: rgba(255,255,255,.10);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .secondary:hover { background: rgba(255,255,255,.15); }
+
+    .hint {
+      margin-top: 14px;
+      color: var(--white-muted);
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .hint b { color: var(--white); }
+
+    .status {
+      min-height: 24px;
+      font-weight: 900;
+      color: var(--orange);
+    }
+
+    .rec-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: var(--orange);
+      border-radius: 50%;
+      margin-right: 6px;
+      box-shadow: 0 0 0 rgba(219,92,76,.5);
+    }
+
+    .recording .rec-dot {
+      animation: pulse 1s infinite;
+    }
+
+    .recording .wheel {
+      animation: spin 1.1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(219,92,76,.5); }
+      70% { box-shadow: 0 0 0 12px rgba(219,92,76,0); }
+      100% { box-shadow: 0 0 0 0 rgba(219,92,76,0); }
+    }
+
+    @media (max-width: 850px) {
+      body { padding: 18px 12px; }
+      .page { grid-template-columns: 1fr; }
+      .hero, .panel { padding: 22px; border-radius: 24px; }
+      .cassette { transform: rotate(-2deg); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="brand"><span class="rec-dot"></span> <strong>RIA.com</strong> MIX REC</div>
+      <h1>Запиши свій трек на касету вечора</h1>
+      <p class="lead">
+        Цього разу збираємо спільний плейліст для зустрічі.
+        Додай пісню, яка точно має прозвучати.
+      </p>
+
+      <div class="cassette-wrap">
+        <div class="cassette" id="cassette">
+          <div class="label">
+            <div class="label-title" id="previewTrack">Виконавець — назва треку</div>
+            <div class="label-sub" id="previewArtist">RIA.com MIX</div>
+            <div class="label-sub" id="previewName">від ріакомівця</div>
+          </div>
+          <div class="wheels">
+            <div class="wheel"></div>
+            <div class="window"></div>
+            <div class="wheel"></div>
+          </div>
+          <div class="bottom"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="brand">SIDE A / твій трек</div>
+      <form id="trackForm">
+        <label>
+          Твоє ім’я
+          <input id="name" name="name" maxlength="32" placeholder="Наприклад, Вероніка" required />
+        </label>
+
+        <label>
+          Виконавець і назва треку
+          <input id="track" name="track" maxlength="80" placeholder="Наприклад, Queen — Don't Stop Me Now" required />
+        </label>
+
+        <label>
+          Посилання на трек
+          <input id="link" name="link" type="url" placeholder="Spotify / YouTube / Apple Music" />
+        </label>
+
+        <label>
+          Коментар
+          <textarea id="comment" name="comment" maxlength="140" placeholder="Чому саме ця пісня? Можна коротко :)"></textarea>
+        </label>
+
+        <div class="actions">
+          <button class="primary" type="submit"><span class="rec-dot"></span> REC ● Записати</button>
+          <button class="secondary" type="button" id="downloadBtn">Зберегти касету PNG</button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <p class="hint">
+          Поки це демоверсія. Дані можна підключити до Google Sheets через Google Apps Script:
+          вставити URL у змінну <b>GOOGLE_SCRIPT_URL</b> внизу файлу.
+        </p>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    const GOOGLE_SCRIPT_URL = ""; // сюди вставляється URL Google Apps Script, коли буде готовий
+
+    const fields = {
+      name: document.getElementById("name"),
+      track: document.getElementById("track"),
+      link: document.getElementById("link"),
+      comment: document.getElementById("comment")
+    };
+
+    const preview = {
+      name: document.getElementById("previewName"),
+      artist: document.getElementById("previewArtist"),
+      track: document.getElementById("previewTrack")
+    };
+
+    const cassette = document.getElementById("cassette");
+    const statusEl = document.getElementById("status");
+    const form = document.getElementById("trackForm");
+
+    function updatePreview() {
+      preview.track.textContent = fields.track.value.trim() || "Виконавець — назва треку";
+      preview.artist.textContent = "RIA.com MIX";
+      preview.name.textContent = fields.name.value.trim() ? `від ${fields.name.value.trim()}` : "від ріакомівця";
+    }
+
+    Object.values(fields).forEach(field => field.addEventListener("input", updatePreview));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusEl.textContent = "Записуємо касету...";
+      document.body.classList.add("recording");
+
+      const payload = {
+        timestamp: new Date().toISOString(),
+        name: fields.name.value.trim(),
+        track: fields.track.value.trim(),
+        link: fields.link.value.trim(),
+        comment: fields.comment.value.trim()
+      };
+
+      try {
+        if (GOOGLE_SCRIPT_URL) {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          const local = JSON.parse(localStorage.getItem("ria_party_tracks") || "[]");
+          local.push(payload);
+          localStorage.setItem("ria_party_tracks", JSON.stringify(local));
+        }
+
+        setTimeout(() => {
+          document.body.classList.remove("recording");
+          statusEl.textContent = "Клац. Твій трек записано на касету вечора 📼";
+        }, 900);
+      } catch (error) {
+        document.body.classList.remove("recording");
+        statusEl.textContent = "Щось не записалось. Спробуй ще раз або перевір підключення.";
+      }
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", async () => {
+      statusEl.textContent = "Готуємо PNG...";
+      const canvas = await html2canvas(cassette, { backgroundColor: null, scale: 2 });
+      const link = document.createElement("a");
+      link.download = "ria-com-mix-cassette.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      statusEl.textContent = "Касету збережено 📼";
+    });
+
+    updatePreview();
+  </script>
+</body>
+</html>
