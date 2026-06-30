@@ -487,119 +487,130 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script>
-   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUkmYVFqeIs6jDD83mSaCVLKysXEwA4HoyIs4O63hp7ycLB7UKorShJSGe9kke0ZZf/exec";// сюди вставляється URL Google Apps Script, коли буде готовий
+ <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUkmYVFqeIs6jDD83mSaCVLKysXEwA4HoyIs4O63hp7ycLB7UKorShJSGe9kke0ZZf/exec";
 
-    const fields = {
-      name: document.getElementById("name"),
-      track: document.getElementById("track"),
-      link: document.getElementById("link"),
-      comment: document.getElementById("comment")
+  const fields = {
+    name: document.getElementById("name"),
+    track: document.getElementById("track"),
+    link: document.getElementById("link"),
+    comment: document.getElementById("comment")
+  };
+
+  const preview = {
+    name: document.getElementById("previewName"),
+    artist: document.getElementById("previewArtist"),
+    track: document.getElementById("previewTrack")
+  };
+
+  const cassette = document.getElementById("cassette");
+  const statusEl = document.getElementById("status");
+  const form = document.getElementById("trackForm");
+
+  function updatePreview() {
+    preview.track.textContent = fields.track.value.trim() || "Виконавець — назва треку";
+    preview.artist.textContent = "RIA.com MIX";
+    preview.name.textContent = fields.name.value.trim()
+      ? `від ${fields.name.value.trim()}`
+      : "від ріакомівця";
+  }
+
+  Object.values(fields).forEach(field => {
+    field.addEventListener("input", updatePreview);
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    statusEl.textContent = "Записуємо касету...";
+    document.body.classList.add("recording");
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      name: fields.name.value.trim(),
+      track: fields.track.value.trim(),
+      link: fields.link.value.trim(),
+      comment: fields.comment.value.trim()
     };
 
-    const preview = {
-      name: document.getElementById("previewName"),
-      artist: document.getElementById("previewArtist"),
-      track: document.getElementById("previewTrack")
-    };
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    const cassette = document.getElementById("cassette");
-    const statusEl = document.getElementById("status");
-    const form = document.getElementById("trackForm");
-
-    function updatePreview() {
-      preview.track.textContent = fields.track.value.trim() || "Виконавець — назва треку";
-      preview.artist.textContent = "RIA.com MIX";
-      preview.name.textContent = fields.name.value.trim() ? `від ${fields.name.value.trim()}` : "від ріакомівця";
-    }
-
-    Object.values(fields).forEach(field => field.addEventListener("input", updatePreview));
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      statusEl.textContent = "Записуємо касету...";
-      document.body.classList.add("recording");
-
-      const payload = {
-        timestamp: new Date().toISOString(),
-        name: fields.name.value.trim(),
-        track: fields.track.value.trim(),
-        link: fields.link.value.trim(),
-        comment: fields.comment.value.trim()
-      };
-
-      try {
-        if (GOOGLE_SCRIPT_URL) {
-          await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-        } else {
-          const local = JSON.parse(localStorage.getItem("ria_party_tracks") || "[]");
-          local.push(payload);
-          localStorage.setItem("ria_party_tracks", JSON.stringify(local));
-        }
-
-        setTimeout(() => {
-          document.body.classList.remove("recording");
-          statusEl.textContent = "Клац. Твій трек записано на касету вечора 📼";
-          loadLatestTracks();
-        }, 900);
-      } catch (error) {
+      setTimeout(() => {
         document.body.classList.remove("recording");
-        statusEl.textContent = "Щось не записалось. Спробуй ще раз або перевір підключення.";
-      }
-    });
-
-    document.getElementById("downloadBtn").addEventListener("click", async () => {
-      statusEl.textContent = "Готуємо PNG...";
-      const canvas = await html2canvas(cassette, { backgroundColor: null, scale: 2 });
-      const link = document.createElement("a");
-      link.download = "ria-com-mix-cassette.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-      statusEl.textContent = "Касету збережено 📼";
-    });
-async function loadLatestTracks() {
-  const container = document.getElementById("latestTracks");
-
-  if (!GOOGLE_SCRIPT_URL) {
-    container.innerHTML = '<p class="empty">Підключи Google Sheets, щоб бачити треки.</p>';
-    return;
-  }
-
-  try {
-    const response = await fetch(GOOGLE_SCRIPT_URL);
-    const tracks = await response.json();
-
-    if (!tracks.length) {
-      container.innerHTML = '<p class="empty">Поки касета порожня. Будь першим треком 📼</p>';
-      return;
+        statusEl.textContent = "Клац. Твій трек записано на касету вечора 📼";
+        loadLatestTracks();
+      }, 900);
+    } catch (error) {
+      document.body.classList.remove("recording");
+      statusEl.textContent = "Щось не записалось. Спробуй ще раз або перевір підключення.";
     }
+  });
 
-    container.innerHTML = tracks.map(item => `
-      <article class="track-card">
-        <strong>${escapeHtml(item.track)}</strong>
-        ${item.comment ? `<p>${escapeHtml(item.comment)}</p>` : ""}
-      </article>
-    `).join("");
-  } catch (error) {
-    container.innerHTML = '<p class="empty">Не вдалось завантажити треки.</p>';
+  document.getElementById("downloadBtn").addEventListener("click", async () => {
+    statusEl.textContent = "Готуємо PNG...";
+
+    const canvas = await html2canvas(cassette, {
+      backgroundColor: null,
+      scale: 2
+    });
+
+    const link = document.createElement("a");
+    link.download = "ria-com-mix-cassette.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    statusEl.textContent = "Касету збережено 📼";
+  });
+
+  function loadLatestTracks() {
+    const container = document.getElementById("latestTracks");
+
+    window.renderLatestTracks = function(tracks) {
+      if (!tracks || !tracks.length) {
+        container.innerHTML = '<p class="empty">Поки касета порожня. Будь першим треком 📼</p>';
+        return;
+      }
+
+      container.innerHTML = tracks.map(item => `
+        <article class="track-card">
+          <strong>${escapeHtml(item.track)}</strong>
+          ${item.comment ? `<p>${escapeHtml(item.comment)}</p>` : ""}
+        </article>
+      `).join("");
+    };
+
+    const oldScript = document.getElementById("latestTracksJsonp");
+    if (oldScript) oldScript.remove();
+
+    const script = document.createElement("script");
+    script.id = "latestTracksJsonp";
+    script.src = `${GOOGLE_SCRIPT_URL}?callback=renderLatestTracks&t=${Date.now()}`;
+
+    script.onerror = () => {
+      container.innerHTML = '<p class="empty">Не вдалось завантажити треки.</p>';
+    };
+
+    document.body.appendChild(script);
   }
-}
 
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-    updatePreview();
-    loadLatestTracks();
-  </script>
+  function escapeHtml(text) {
+    return String(text)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  updatePreview();
+  loadLatestTracks();
+</script>
 </body>
 </html>
